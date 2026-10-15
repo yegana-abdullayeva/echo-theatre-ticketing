@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echo Theatre – Tickets</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <header>
+    <h1>Echo Theatre</h1>
+    <ul id="legend" aria-label="Legend"></ul>
+  </header>
+
+  <main>
+    <section class="map-area" aria-label="Venue map">
+      <div id="viewport">
+        <div id="map">
+          <div id="stage">STAGE</div>
+          <div id="seats"></div>
+        </div>
+      </div>
+      <div class="controls" role="group" aria-label="Map controls">
+        <button type="button" data-action="zoom-in"  aria-label="Zoom in">+</button>
+        <button type="button" data-action="up"       aria-label="Move up">▲</button>
+        <button type="button" data-action="zoom-out" aria-label="Zoom out">−</button>
+        <button type="button" data-action="left"     aria-label="Move left">◀</button>
+        <button type="button" data-action="reset"    aria-label="Reset / center view">⟲</button>
+        <button type="button" data-action="right"    aria-label="Move right">▶</button>
+        <span></span>
+        <button type="button" data-action="down"     aria-label="Move down">▼</button>
+      </div>
+    </section>
+    <aside>
+      <section id="details" aria-live="polite">
+        <h2>Seat details</h2>
+        <div id="details-body">Select a seat on the map.</div>
+        <button id="add-btn" type="button" disabled>ADD TO CART</button>
+      </section>
+      <section id="cart">
+        <h2>Cart</h2>
+        <ul id="cart-list"></ul>
+        <p>Total: <strong id="total">0</strong> AZN</p>
+      </section>
+    </aside>
+  </main>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
