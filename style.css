@@ -174,3 +174,19 @@ aside section {
   color: #ef4444;
   cursor: pointer;
 }
+
+.seat {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px 7px 3px 3px;
+  background: var(--c);          
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.seat:hover {
+  transform: scale(1.15);
+}
