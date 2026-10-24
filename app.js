@@ -54,8 +54,33 @@ function renderSeats() {
   $('#seats').appendChild(frag);
 }
 
+function renderLegend() {
+  const items = [
+    ...VENUE.zones.map(z => [z.color, `${z.name} – ${z.price} AZN`]),
+    ['#22c55e', 'In cart'],
+    ['#6b7280', 'Unavailable']
+  ];
+
+  $('#legend').innerHTML = items
+    .map(([color, text]) => `<li><i style="background:${color}"></i>${text}</li>`)
+    .join('');
+}
+
+function refreshSeat(id) {
+  const el = document.querySelector(`.seat[data-id="${id}"]`);
+  const s = seats.get(id);
+  if (!el || !s) return;
+
+  el.classList.toggle('unavailable', s.sold);
+  el.classList.toggle('in-cart', cart.includes(id));
+  el.classList.toggle('inspected', inspectedId === id);
+  el.setAttribute('aria-pressed', String(inspectedId === id));
+}
+
 function init() {
+  renderLegend();
   generateSeats();
   renderSeats();
+  seats.forEach((_, id) => refreshSeat(id));
 }
 init();

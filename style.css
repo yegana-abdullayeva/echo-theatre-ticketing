@@ -190,3 +190,24 @@ aside section {
 .seat:hover {
   transform: scale(1.15);
 }
+
+.seat:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.seat.unavailable {
+  background: var(--sold);
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.seat.in-cart {
+  background: var(--ok);
+}
+
+.seat.inspected {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  z-index: 2;
+}
