@@ -77,10 +77,48 @@ function refreshSeat(id) {
   el.setAttribute('aria-pressed', String(inspectedId === id));
 }
 
+function inspect(id) {
+  const prev = inspectedId;
+  inspectedId = id;
+
+  if (prev) refreshSeat(prev);
+  refreshSeat(id);
+  renderDetails();
+}
+
+function renderDetails() {
+  const body = $('#details-body');
+  const btn = $('#add-btn');
+  const s = seats.get(inspectedId);
+
+  if (!s) {
+    body.textContent = 'Select a seat on the map.';
+    btn.disabled = true;
+    return;
+  }
+
+  const inCart = cart.includes(s.id);
+  const status = s.sold ? 'Unavailable' : inCart ? 'In your cart' : 'Available';
+
+  body.innerHTML = `
+    <p><strong>${s.zone.name}</strong> · Row ${s.row} · Seat ${s.num}</p>
+    <p>Price: <strong>${s.price} AZN</strong></p>
+    <p>Status: ${status}</p>`;
+
+  btn.disabled = s.sold || inCart;
+}
+
+$('#seats').addEventListener('click', e => {
+  const b = e.target.closest('.seat');
+  if (b) inspect(b.dataset.id);          
+});
+
+
 function init() {
   renderLegend();
   generateSeats();
   renderSeats();
   seats.forEach((_, id) => refreshSeat(id));
+  renderDetails();
 }
 init();
