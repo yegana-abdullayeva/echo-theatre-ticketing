@@ -113,6 +113,61 @@ $('#seats').addEventListener('click', e => {
   if (b) inspect(b.dataset.id);          
 });
 
+const view = { scale: 1, x: 0, y: 0 };
+const MIN_SCALE = 0.4;
+const MAX_SCALE = 2.5;
+const STEP = 80;
+const MARGIN = 80;
+
+function clampAxis(value, content, box) {
+  const lo = Math.min(box - content, 0) - MARGIN;
+  const hi = Math.max(box - content, 0) + MARGIN;
+  return Math.min(hi, Math.max(lo, value));
+}
+
+function applyView() {
+  const vp = $('#viewport');
+  view.x = clampAxis(view.x, VENUE.width * view.scale, vp.clientWidth);
+  view.y = clampAxis(view.y, VENUE.height * view.scale, vp.clientHeight);
+
+  $('#map').style.transform =
+    `translate(${view.x}px, ${view.y}px) scale(${view.scale})`;
+}
+
+function zoomBy(factor, cx, cy) {
+  const vp = $('#viewport');
+  cx = cx ?? vp.clientWidth / 2;
+  cy = cy ?? vp.clientHeight / 2;
+
+  const newScale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, view.scale * factor));
+  const k = newScale / view.scale;
+
+  view.x = cx - (cx - view.x) * k;       
+  view.y = cy - (cy - view.y) * k;
+  view.scale = newScale;
+  applyView();
+}
+
+function resetView() {
+  const vp = $('#viewport');
+  view.scale = Math.min(1, vp.clientWidth / VENUE.width);
+  view.x = (vp.clientWidth - VENUE.width * view.scale) / 2;
+  view.y = 10;
+  applyView();
+}
+
+$('.controls').addEventListener('click', e => {
+  const action = e.target.closest('button')?.dataset.action;
+  if (!action) return;
+
+  if (action === 'zoom-in')  zoomBy(1.25);
+  if (action === 'zoom-out') zoomBy(1 / 1.25);
+  if (action === 'up')    { view.y += STEP; applyView(); }
+  if (action === 'down')  { view.y -= STEP; applyView(); }
+  if (action === 'left')  { view.x += STEP; applyView(); }
+  if (action === 'right') { view.x -= STEP; applyView(); }
+  if (action === 'reset') resetView();
+});
 
 function init() {
   renderLegend();
@@ -120,5 +175,6 @@ function init() {
   renderSeats();
   seats.forEach((_, id) => refreshSeat(id));
   renderDetails();
+  resetView();
 }
 init();
