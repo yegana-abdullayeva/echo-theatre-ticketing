@@ -169,11 +169,62 @@ $('.controls').addEventListener('click', e => {
   if (action === 'reset') resetView();
 });
 
+function addToCart() {
+  const s = seats.get(inspectedId);
+  if (!s || s.sold || cart.includes(s.id)) return;   
+
+  cart.push(s.id);
+  refreshSeat(s.id);
+  renderCart();
+  renderDetails();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(x => x !== id);
+
+  refreshSeat(id);                                   
+  renderCart();
+  renderDetails();
+}
+
+function renderCart() {
+  const list = $('#cart-list');
+  list.innerHTML = '';
+
+  if (!cart.length) {
+    list.innerHTML = '<li class="empty">Cart is empty</li>';
+  }
+
+  cart.forEach(id => {
+    const s = seats.get(id);
+
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${s.zone.name} · ${s.row}${s.num}</span>
+      <span>${s.price} AZN</span>`;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = 'Remove';
+    btn.setAttribute('aria-label', `Remove ${s.zone.name} ${s.row}${s.num}`);
+    btn.addEventListener('click', () => removeFromCart(id));
+
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
+
+  $('#total').textContent = cart.reduce((sum, id) => sum + seats.get(id).price, 0);
+}
+
+$('#add-btn').addEventListener('click', addToCart);
+
+
 function init() {
   renderLegend();
   generateSeats();
   renderSeats();
   seats.forEach((_, id) => refreshSeat(id));
+  renderCart();
   renderDetails();
   resetView();
 }
