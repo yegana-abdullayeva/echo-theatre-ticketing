@@ -174,6 +174,7 @@ function addToCart() {
   if (!s || s.sold || cart.includes(s.id)) return;   
 
   cart.push(s.id);
+  saveCart();
   refreshSeat(s.id);
   renderCart();
   renderDetails();
@@ -181,8 +182,8 @@ function addToCart() {
 
 function removeFromCart(id) {
   cart = cart.filter(x => x !== id);
-
-  refreshSeat(id);                                   
+  saveCart();
+  refreshSeat(id);                                  
   renderCart();
   renderDetails();
 }
@@ -218,11 +219,33 @@ function renderCart() {
 
 $('#add-btn').addEventListener('click', addToCart);
 
+const STORAGE_KEY = 'wm1-venue-cart-v1';
+
+function saveCart() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
+  } catch (e) { /* storage unavailable: ignore */ }
+}
+
+function loadCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+
+    if (Array.isArray(saved)) {
+      cart = [...new Set(saved)].filter(id => seats.has(id) && !seats.get(id).sold);
+    }
+  } catch (e) {
+    cart = [];
+  }
+}
+
+
 
 function init() {
   renderLegend();
   generateSeats();
   renderSeats();
+  loadCart();                           
   seats.forEach((_, id) => refreshSeat(id));
   renderCart();
   renderDetails();

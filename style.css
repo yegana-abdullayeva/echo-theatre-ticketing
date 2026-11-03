@@ -211,3 +211,31 @@ aside section {
   outline-offset: 2px;
   z-index: 2;
 }
+
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+
+  #viewport {
+    height: 60vh;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    padding: 10px;
+  }
+
+  main {
+    padding: 0 10px 10px;
+  }
+
+  .controls {
+    grid-template-columns: repeat(3, 44px);
+  }
+
+  .controls button {
+    height: 44px;
+  }
+}
