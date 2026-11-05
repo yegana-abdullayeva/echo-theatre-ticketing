@@ -239,3 +239,12 @@ aside section {
     height: 44px;
   }
 }
+
+#viewport {
+  cursor: grab;
+  touch-action: none;       
+}
+
+#viewport.dragging {
+  cursor: grabbing;
+}

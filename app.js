@@ -109,6 +109,8 @@ function renderDetails() {
 }
 
 $('#seats').addEventListener('click', e => {
+  if (suppressClick) return;             
+
   const b = e.target.closest('.seat');
   if (b) inspect(b.dataset.id);          
 });
@@ -239,16 +241,79 @@ function loadCart() {
   }
 }
 
+window.addEventListener('resize', applyView);   
+
+document.addEventListener('keydown', e => {     
+  if (e.key === 'Escape' && inspectedId) {
+    const prev = inspectedId;
+    inspectedId = null;
+    refreshSeat(prev);
+    renderDetails();
+  }
+});
+
+let suppressClick = false;               
+
+function enableMouseNavigation() {
+  const vp = $('#viewport');
+  let drag = null;
+
+  vp.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = vp.getBoundingClientRect();
+    zoomBy(
+      e.deltaY < 0 ? 1.1 : 1 / 1.1,
+      e.clientX - rect.left,
+      e.clientY - rect.top
+    );
+  }, { passive: false });
+
+  vp.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    drag = {
+      startX: e.clientX,
+      startY: e.clientY,
+      originX: view.x,
+      originY: view.y,
+      moved: false
+    };
+  });
+
+  window.addEventListener('pointermove', e => {
+    if (!drag) return;
+
+    const dx = e.clientX - drag.startX;
+    const dy = e.clientY - drag.startY;
+
+    if (!drag.moved && Math.hypot(dx, dy) < 5) return;   
+
+    drag.moved = true;
+    vp.classList.add('dragging');
+    view.x = drag.originX + dx;
+    view.y = drag.originY + dy;
+    applyView();
+  });
+
+  window.addEventListener('pointerup', () => {
+    if (drag && drag.moved) {
+      suppressClick = true;
+      setTimeout(() => { suppressClick = false; }, 0);
+    }
+    drag = null;
+    vp.classList.remove('dragging');
+  });
+}
 
 
 function init() {
   renderLegend();
   generateSeats();
   renderSeats();
-  loadCart();                           
+  loadCart();
   seats.forEach((_, id) => refreshSeat(id));
   renderCart();
   renderDetails();
   resetView();
+  enableMouseNavigation();
 }
 init();
